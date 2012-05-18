@@ -51,6 +51,13 @@ map_search(struct map * m, int fd) {
 	return -1;
 }
 
+/* hash相同 表示fd相同；什么时候会写入两个相同的fd？ */
+/* 插入分为三种情况：   
+ * 1、node为空   
+ * 2、node不为空（   
+ *    1 hash相同，表示这个hash node是相同hash的头，从这个头开始把所有hash相同的节点连起来；从hash中找一个空的，填入元素，在连起来   
+ *    2 hash不同，表示当前节点已经被使用，在别的hash链表中；这里的处理是把此node从原链表上摘除，把新节点写入，再把原来的节点插入  
+ * ）*/
 void 
 map_insert(struct map * m, int fd, int id) {
 	int hash = fd & (m->size-1);

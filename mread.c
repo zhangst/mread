@@ -38,13 +38,13 @@ struct socket {
 struct mread_pool {
 	int listen_fd;
 	int epoll_fd;
-	int max_connection;
-	int closed;
-	int active;
+	int max_connection;           /* 最大连接数; */
+	int closed;                   /* ?? 处于CLOSED状态socket的数目 */
+	int active;                   /* 当前待处理的socket fd的下标（sockets的下标） */
 	int skip;
-	struct socket * sockets;
-	struct socket * free_socket;
-	struct map * socket_hash;
+	struct socket * sockets;      /* 指向sockets数组缓冲区 */
+	struct socket * free_socket;  /* 指向可用的socket */
+	struct map * socket_hash;     /* sockets数组的加速查找hash */
 	int queue_len;
 	int queue_head;
 	struct epoll_event ev[READQUEUE];
@@ -61,7 +61,7 @@ _create_sockets(int max) {
 		s[i].temp = NULL;
 		s[i].status = SOCKET_INVALID;
 	}
-	s[max-1].fd = -1;
+	s[max-1].fd = -1; /* 结束标志 */ 
 	return s;
 }
 
